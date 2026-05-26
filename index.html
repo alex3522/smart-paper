@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Paper</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='14.5' y='18' width='3' height='10' fill='%235b4636'/%3E%3Cellipse cx='16' cy='16' rx='11' ry='9' fill='%236b8a3d'/%3E%3Cellipse cx='11' cy='13' rx='6' ry='5' fill='%237c9c4b'/%3E%3Cellipse cx='21' cy='13' rx='6' ry='5' fill='%237c9c4b'/%3E%3Cellipse cx='16' cy='10' rx='5' ry='4' fill='%237c9c4b'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="layout">
+  <div class="main">
+    <div class="header">
+      <h1>SMART PAPER</h1>
+      <span class="date" id="date"></span>
+    </div>
+    <textarea id="editor" placeholder="Start typing... thoughts, tasks, notes — whatever's on your mind."></textarea>
+  </div>
+
+  <div class="side">
+    <!-- Sprint timer panel: time display + sprint/round counter + Start/Pause/End -->
+    <div class="panel">
+      <p class="panel-title">Sprint timer</p>
+      <div class="timer-display">
+        <div class="timer-time" id="timer-time">20:00</div>
+        <div class="timer-status" id="timer-status">ready to start</div>
+      </div>
+      <div class="sprint-info">
+        <span>Sprint <span id="sprint-num">0</span>/4</span>
+        <span>Round <span id="round-num">0</span>/3</span>
+      </div>
+      <div class="timer-controls">
+        <button id="start-btn" class="primary">Start</button>
+        <button id="pause-btn" disabled>Pause</button>
+        <button id="abandon-btn" disabled>End</button>
+      </div>
+    </div>
+
+    <!-- Tree panel: SVG that grows during focus rounds, withers at sprint end. -->
+    <div class="panel">
+      <p class="panel-title">Today's tree</p>
+      <svg id="tree-svg" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="tree-label" id="tree-label"></div>
+    </div>
+
+    <!-- Grove panel: small icons for each completed sprint today. -->
+    <div class="panel">
+      <p class="panel-title">Today's grove</p>
+      <div class="grove-strip" id="grove-strip">
+        <span class="grove-empty">no completed sprints yet</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Fixed footer holds everything: stats, settings, actions. -->
+<div class="footer">
+  <div class="footer-inner">
+    <div class="stats">
+      <span><strong id="word-count">0</strong> words</span>
+      <span><strong id="line-count">0</strong> lines</span>
+      <span class="save-indicator" id="save-indicator">saved</span>
+    </div>
+    <div class="actions">
+      <button id="typewriter-toggle" title="Typewriter mode">≡ Normal</button>
+      <button id="chime-toggle" title="Sprint chimes">🔔 On</button>
+      <div class="sound-controls">
+        <span id="sound-loading">loading…</span>
+        <input type="range" id="volume-slider" min="0" max="100" value="30" class="hidden">
+        <select class="theme-select" id="sound-select" title="Ambient sound">
+          <option value="off">♪ Off</option>
+          <option value="rain">Rain</option>
+          <option value="wind">Wind</option>
+          <option value="fire">Fire</option>
+          <option value="lofi">Lo-fi radio</option>
+          <option value="dronezone">Drone Zone</option>
+          <option value="missioncontrol">Mission Control</option>
+        </select>
+      </div>
+      <select class="theme-select" id="theme-select" title="Theme">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="sepia">Sepia</option>
+        <option value="midnight">Midnight</option>
+        <option value="forest">Forest</option>
+      </select>
+      <button id="export-btn" class="primary">Download .md</button>
+      <button id="clear-btn">Clear</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

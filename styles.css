@@ -1,0 +1,451 @@
+/* ===========================================================================
+   THEME SYSTEM
+   ===========================================================================
+   Each theme is a set of CSS custom properties. Switching themes adds a
+   class to <body>; everything visual reads from these vars. Tree colours
+   are NOT here — they're in JS palettes because SVG fill attributes can't
+   read CSS vars cleanly across all renderers.
+*/
+:root {
+  /* Light theme — default cream paper */
+  --bg: #faf9f6;
+  --bg-panel: rgba(255,255,255,0.5);
+  --bg-footer: rgba(250, 249, 246, 0.95);
+  --text: #2a2a2a;
+  --text-muted: #888;
+  --text-subtle: #b8b8b8;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --border-hover: rgba(0,0,0,0.25);
+  --hover-bg: rgba(0,0,0,0.04);
+  --primary-bg: #2a2a2a;
+  --primary-text: #faf9f6;
+  --primary-hover: #1a1a1a;
+  --error: #a32d2d;
+  --ground-shadow: rgba(0,0,0,0.06);
+}
+body.theme-dark {
+  --bg: #1a1a1a;
+  --bg-panel: rgba(255,255,255,0.04);
+  --bg-footer: rgba(26, 26, 26, 0.95);
+  --text: #e8e6e1;
+  --text-muted: #888;
+  --text-subtle: #555;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --border-hover: rgba(255,255,255,0.3);
+  --hover-bg: rgba(255,255,255,0.05);
+  --primary-bg: #e8e6e1;
+  --primary-text: #1a1a1a;
+  --primary-hover: #ffffff;
+  --error: #e07070;
+  --ground-shadow: rgba(0,0,0,0.4);
+}
+body.theme-sepia {
+  --bg: #f4ecd8;
+  --bg-panel: rgba(255, 250, 235, 0.6);
+  --bg-footer: rgba(244, 236, 216, 0.95);
+  --text: #4a3826;
+  --text-muted: #8a7458;
+  --text-subtle: #b9a786;
+  --border: rgba(74, 56, 38, 0.12);
+  --border-strong: rgba(74, 56, 38, 0.2);
+  --border-hover: rgba(74, 56, 38, 0.35);
+  --hover-bg: rgba(74, 56, 38, 0.05);
+  --primary-bg: #4a3826;
+  --primary-text: #f4ecd8;
+  --primary-hover: #2f2316;
+  --error: #a83b2d;
+  --ground-shadow: rgba(74, 56, 38, 0.1);
+}
+body.theme-midnight {
+  --bg: #131a26;
+  --bg-panel: rgba(180, 200, 230, 0.04);
+  --bg-footer: rgba(19, 26, 38, 0.95);
+  --text: #d4dceb;
+  --text-muted: #7a8499;
+  --text-subtle: #4a5468;
+  --border: rgba(180, 200, 230, 0.1);
+  --border-strong: rgba(180, 200, 230, 0.18);
+  --border-hover: rgba(180, 200, 230, 0.35);
+  --hover-bg: rgba(180, 200, 230, 0.06);
+  --primary-bg: #d4dceb;
+  --primary-text: #131a26;
+  --primary-hover: #ffffff;
+  --error: #e8a4a4;
+  --ground-shadow: rgba(0,0,0,0.5);
+}
+body.theme-forest {
+  --bg: #1a2218;
+  --bg-panel: rgba(220, 230, 200, 0.04);
+  --bg-footer: rgba(26, 34, 24, 0.95);
+  --text: #e6e3d4;
+  --text-muted: #8a9078;
+  --text-subtle: #555a48;
+  --border: rgba(220, 230, 200, 0.1);
+  --border-strong: rgba(220, 230, 200, 0.18);
+  --border-hover: rgba(220, 230, 200, 0.35);
+  --hover-bg: rgba(220, 230, 200, 0.06);
+  --primary-bg: #e6e3d4;
+  --primary-text: #1a2218;
+  --primary-hover: #ffffff;
+  --error: #d97a6a;
+  --ground-shadow: rgba(0,0,0,0.4);
+}
+
+/* ===========================================================================
+   LAYOUT & EDITOR
+   =========================================================================== */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--text);
+  transition: background 1.5s ease, color 0.3s;
+  position: relative;
+}
+/* Time-of-day tint overlay. Sits behind everything via z-index: -1.
+   Colour is set from JS based on current hour and active theme. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: var(--time-tint, transparent);
+  pointer-events: none;
+  z-index: -1;
+  transition: background 1.5s ease;
+}
+.layout {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+  gap: 24px;
+  padding: 32px 24px 120px; /* bottom padding clears the fixed footer */
+}
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.header h1 {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+  color: var(--text);
+  letter-spacing: 0.5px;
+}
+.header .date {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+#editor {
+  flex: 1;
+  width: 100%;
+  min-height: 60vh;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text);
+  resize: none;
+  padding: 0;
+  tab-size: 2;
+  caret-color: var(--text);
+}
+/* Typewriter mode: large vertical padding pushes the cursor toward the
+   middle of the viewport. JS handles the per-keystroke recentring. */
+#editor.typewriter {
+  min-height: 70vh;
+  padding-top: 35vh;
+  padding-bottom: 35vh;
+}
+#editor::placeholder {
+  color: var(--text-subtle);
+  font-style: italic;
+}
+::selection {
+  background: rgba(125, 125, 125, 0.3);
+}
+
+/* ===========================================================================
+   SIDE PANEL — Sprint timer, tree, grove
+   =========================================================================== */
+.side {
+  width: 260px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  transition: background 1.5s ease;
+}
+.panel-title {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+.timer-display {
+  text-align: center;
+  margin-bottom: 12px;
+}
+.timer-time {
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.timer-status {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.sprint-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.timer-controls {
+  display: flex;
+  gap: 6px;
+}
+.timer-controls button {
+  flex: 1;
+  font-size: 11px;
+  padding: 6px 8px;
+}
+#tree-svg {
+  width: 100%;
+  height: 240px;
+  display: block;
+}
+.tree-label {
+  text-align: center;
+  font-size: 10px;
+  color: var(--text-subtle);
+  margin-top: 6px;
+  font-style: italic;
+  min-height: 14px;
+}
+.grove-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 56px;
+  align-items: center;
+  justify-content: flex-start;
+}
+.grove-empty {
+  font-size: 11px;
+  color: var(--text-subtle);
+  font-style: italic;
+  width: 100%;
+  text-align: center;
+}
+.grove-tree {
+  width: 48px;
+  height: 56px;
+}
+
+/* ===========================================================================
+   FOOTER — Stats, save indicator, all controls
+   =========================================================================== */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-footer);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-top: 1px solid var(--border);
+  padding: 12px 24px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.stats { display: flex; gap: 16px; align-items: center; }
+.stats span strong { color: var(--text); font-weight: 500; }
+.actions { display: flex; gap: 8px; align-items: center; }
+
+/* Generic button styling */
+button {
+  font-family: inherit;
+  font-size: 12px;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+button:hover {
+  background: var(--hover-bg);
+  border-color: var(--border-hover);
+}
+button.primary {
+  background: var(--primary-bg);
+  color: var(--primary-text);
+  border-color: var(--primary-bg);
+}
+button.primary:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+button:disabled:hover {
+  background: transparent;
+  border-color: var(--border-strong);
+}
+
+.save-indicator {
+  font-size: 11px;
+  color: var(--text-subtle);
+  transition: opacity 0.3s, color 0.3s;
+}
+.save-indicator.visible { color: var(--text-muted); }
+.save-indicator.error { color: var(--error); }
+
+/* Native <select> styled to match the rest of the chrome.
+   Custom dropdown arrow drawn with crossed gradients. */
+.theme-select {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  padding: 4px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-family: inherit;
+  transition: all 0.15s;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 12px) 50%, calc(100% - 8px) 50%;
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+  padding-right: 22px;
+}
+.theme-select:hover {
+  background-color: var(--hover-bg);
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+.theme-select option {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Sound controls — dropdown + volume slider + loading indicator */
+.sound-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+#volume-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 60px;
+  height: 4px;
+  background: var(--border-strong);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+#volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--text);
+  border-radius: 50%;
+  cursor: pointer;
+}
+#volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: var(--text);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+#volume-slider.hidden { display: none; }
+#sound-loading {
+  font-size: 10px;
+  color: var(--text-subtle);
+  font-style: italic;
+  display: none;
+}
+#sound-loading.visible { display: inline; }
+
+/* Toggle buttons (typewriter, chime). Active state inverts colours. */
+#typewriter-toggle, #chime-toggle {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  padding: 4px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+#typewriter-toggle:hover, #chime-toggle:hover {
+  background: var(--hover-bg);
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+#typewriter-toggle.active, #chime-toggle.active {
+  background: var(--primary-bg);
+  color: var(--primary-text);
+  border-color: var(--primary-bg);
+}
+#chime-toggle.disabled {
+  opacity: 0.5;
+}
+
+/* Mobile fallback — side panel becomes a row beneath the editor. */
+@media (max-width: 900px) {
+  .layout { flex-direction: column; padding: 20px 16px 140px; }
+  .side { width: 100%; flex-direction: row; flex-wrap: wrap; }
+  .side .panel { flex: 1; min-width: 200px; }
+}
