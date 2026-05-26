@@ -78,11 +78,13 @@ All preferences (theme, sound, volume, typewriter mode, chimes) persist across s
 
 ## Usage
 
-1. Download `smart-paper1.2.html`
-2. Open it in any modern browser (Chrome, Firefox, Safari, Edge)
-3. Bookmark it
+Open [Smart Paper on GitHub Pages](https://alex3522.github.io/smart-paper/) in any modern browser, or clone the repo and open `index.html` directly from disk.
 
 No server, no install, no dependencies.
+
+### Install as an app (PWA)
+
+Smart Paper is installable as a Progressive Web App. In Chrome or Edge, click the install icon in the address bar. On iOS Safari, use **Share → Add to Home Screen**. Once installed it works fully offline.
 
 ### Export
 Click **Download .md** to save the day's writing as `YYYY-MM-DD.md`. The file includes your notes and an inline SVG grove showing completed sprints. Compatible with Obsidian daily notes out of the box.
@@ -97,13 +99,24 @@ Click **Clear** to wipe the editor and grove. Settings are preserved. Download f
 - **Blank paper, not another productivity tool.** No tags, tasks, or formatting toolbar.
 - **Persistence over prompting.** Never ask the user to do anything — auto-save, auto-insert, auto-restore.
 - **Aesthetic mood matters.** Themes, ambient sound, and time-of-day tint exist because writing surfaces should feel inviting.
-- **Single file, no build step, no dependencies.** Drop on disk, double-click, bookmark. Self-contained forever.
+- **No build step, no dependencies.** Clone, open `index.html`, bookmark. No bundler, no npm, no framework.
 
 ---
 
 ## Architecture
 
-Everything lives in one HTML file (~2100 lines). The script is a single IIFE organised into numbered sections:
+No build step, no bundler, no dependencies — just files the browser loads directly.
+
+| File | Responsibility |
+|---|---|
+| `index.html` | Markup and asset references |
+| `styles.css` | All CSS, including the 5 theme palettes via custom properties |
+| `app.js` | Main IIFE: timer, sound engine, editor, theme, export (~1120 lines) |
+| `tree.js` | ES module: SVG tree rendering, sky/shadow/atmosphere (~390 lines) |
+| `sw.js` | Service worker: cache-first PWA shell |
+| `manifest.json` | PWA metadata and icon |
+
+`app.js` is a single IIFE organised into numbered sections:
 
 | Section | Responsibility |
 |---|---|
@@ -112,11 +125,11 @@ Everything lives in one HTML file (~2100 lines). The script is a single IIFE org
 | 5–6 | Ambient sound engine, sprint chimes |
 | 7–8 | Typewriter mode, date display & daily reset |
 | 9–11 | Sprint state, editor stats/autosave, hour headers |
-| 12–12b | Tree SVG rendering, sun shadow, sky atmosphere |
+| 12 | Tree rendering → `tree.js` |
 | 13–14 | Sprint state machine, grove storage |
 | 15–17 | Event wiring, export/clear, initialisation |
 
-All state lives in `localStorage` under `smart-paper-*` keys. Multiple copies of the file on different paths coexist without collision.
+All state lives in `localStorage` under `smart-paper-*` keys. Multiple instances on different paths coexist without collision.
 
 ---
 
